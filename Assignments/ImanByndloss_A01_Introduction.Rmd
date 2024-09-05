@@ -30,7 +30,7 @@ Enter answers to the questions just below the >Answer: prompt.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: It will be my first time working on a group project in RStudio, and I am unsure if we will be able to develop a project that we are all excited to be a part of. Still, I am looking forward to learning more about data analytics! 
+> Answer: It will be my first time working on a group project in RStudio, and I am unsure if we will be able to develop a project that we are all excited to be a part of. No matter the case, I am looking forward to learning more about data analytics! 
 
 
 ## 2) GitHub

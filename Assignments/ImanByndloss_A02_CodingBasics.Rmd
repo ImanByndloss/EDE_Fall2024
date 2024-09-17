@@ -25,21 +25,17 @@ This exercise accompanies the lessons/labs in Environmental Data Analytics on co
 1.  Generate a sequence of numbers from one to 55, increasing by fives. Assign this sequence a name.
 ```{r basics 1.1}
 one_fiftyfive <- seq(1, 55, 5)
-# PRINTED: 1 6 11 16 21 26 31 41 46 51
 ```
 
 2.  Compute the mean and median of this sequence.
 ```{r basics 1.2}
 mean(one_fiftyfive)
-# PRINTED: 26
 median(one_fiftyfive)
-# PRINTED: 26
 ```
 
 3.  Ask R to determine whether the mean is greater than the median.
 ```{r basics 1.3}
 mean(one_fiftyfive) > median(one_fiftyfive)
-# PRINTED: FALSE
 ```
 
 4.  Insert comments in your code to describe what you are doing.
@@ -67,13 +63,10 @@ scholarship <- c(FALSE,TRUE,FALSE,TRUE) # Named and created a vector with schola
 ```{r basics 2.2}
 # class() tells you what type of vector it is
 class(student)
-# PRINTED: character
 
 class(score)
-# PRINTED: numeric
 
 class(scholarship)
-# PRINTED: logical
 ```
 
 7.  Combine each of the vectors into a data frame. Assign the data frame an informative name.
@@ -122,24 +115,20 @@ f2 <- function(x){
 
 #12a. Run the first function with the value 52.5
 f1(52.5)
-# PRINTED: "Pass"
 
 #12b. Run the second function with the value 52.5
 f2(52.5)
-# PRINTED: "Pass"
 
 #13a. Run the first function with the vector of test scores
-f1(score)
-# PRINTED: Error in if (x > 50) { : the condition has length > 1
+# f1(score)
 
 #13b. Run the second function with the vector of test scores
 f2(score)
-# PRINTED: "Pass" "Pass" "Pass" "Pass"
 ```
 
 14. QUESTION: Which option of `if`...`else` vs. `ifelse` worked? Why? (Hint: search the web for "R vectorization")
 
-> Answer: While ifelse()can handle vectorized operations, being capable of running multiple times for different values, if...else() cannot handle vectorized operations due to the fact that it can only run once for a singular value.
+> Answer: if...else() did not work for the vector of test scores. While ifelse(), being capable of running multiple times for different values, can handle vectorized operations, if...else() cannot handle vectorized operations due to the fact that it can only run once for a singular value.
 
 
 **NOTE** Before knitting, you'll need to comment out the call to the function in Q13 that does not work. (A document can't knit if the code it contains causes an error!)

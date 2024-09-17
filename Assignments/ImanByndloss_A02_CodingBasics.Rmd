@@ -66,15 +66,14 @@ scholarship <- c(FALSE,TRUE,FALSE,TRUE) # Named and created a vector with schola
 6.  Label each vector with a comment on what type of vector it is.
 ```{r basics 2.2}
 # class() tells you what type of vector it is
-
 class(student)
-# PRINTED: 
+# PRINTED: character
 
 class(score)
-# PRINTED: 
+# PRINTED: numeric
 
 class(scholarship)
-# PRINTED:
+# PRINTED: logical
 ```
 
 7.  Combine each of the vectors into a data frame. Assign the data frame an informative name.
@@ -102,21 +101,45 @@ names(dfSchool) <- c("Student Name", "Test Score", "Scholarship") # Labeled the 
 
 ```{r basics 3}
 #10. Create a function using if...else
+f1 <- function(x){
+  if(x>50) {
+    print("Pass")
+  }
+  else {
+    print("Fail")
+  }
+}
+# Used if() to explain what to do if expression is TRUE
+# Used else() to explain what to do if expression is FALSE
 
 #11. Create a function using ifelse()
+f2 <- function(x){
+  result <- ifelse(x>50, "Pass", "Fail")
+  print(result)
+}
+# Used ifelse() which is structured (expression, if TRUE, if FALSE)
+# An error occurs when print is included in the if TRUE and if FALSE statement, so it had to be removed and placed on a separate line in the function
 
 #12a. Run the first function with the value 52.5
+f1(52.5)
+# PRINTED: "Pass"
 
 #12b. Run the second function with the value 52.5
+f2(52.5)
+# PRINTED: "Pass"
 
 #13a. Run the first function with the vector of test scores
+f1(score)
+# PRINTED: Error in if (x > 50) { : the condition has length > 1
 
 #13b. Run the second function with the vector of test scores
+f2(score)
+# PRINTED: "Pass" "Pass" "Pass" "Pass"
 ```
 
 14. QUESTION: Which option of `if`...`else` vs. `ifelse` worked? Why? (Hint: search the web for "R vectorization")
 
-> Answer:
+> Answer: While ifelse()can handle vectorized operations, being capable of running multiple times for different values, if...else() cannot handle vectorized operations due to the fact that it can only run once for a singular value.
 
 
 **NOTE** Before knitting, you'll need to comment out the call to the function in Q13 that does not work. (A document can't knit if the code it contains causes an error!)

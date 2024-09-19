@@ -3,6 +3,8 @@ title: "Lab 3b - Workspaces, Dates, and Factors"
 author: "Environmental Data Analytics | John Fay and Luana Lima "
 date: "Fall 2024"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Objectives
@@ -52,7 +54,7 @@ here()
 setwd(here())
 
 #Arguments in the `here()` command allow easy navigation within subfolders
-filename <- here('Data','Raw','USGS_Site02085000_Flow_Raw.csv')
+filename <- here('Data','Raw','USGS_Site02085000_Flow_Raw.csv') # Commas can be replaced with / which allows you to keep it all within the same quotations
 print(filename)
 
 #See whether the file exists
@@ -65,7 +67,7 @@ usgs_flow_data <- read.csv(
 )
 
 #Create and print a list of all files in a folder using "dir" and "here"
-filenames <- dir(here('Data','Raw'),pattern = ("*.csv"))
+filenames <- dir(here('Data','Raw'),pattern = ("*.csv")) # * is a wild card that calls all the csv s in that directory
 print(filenames)
 ```
 
@@ -132,9 +134,9 @@ date_obj_today
 
 #Ex_3 - on your own...
 str_juneteenth <- "19 June 1865"
-#Since the format is month-day-year we will use function mdy()
-#date_juneteenth <- ()
-#date_juneteenth
+#Since the format is day-month-year we will use function dmy()
+date_juneteenth <- (dmy(str_juneteenth))
+date_juneteenth
 ```
 ### The century issue
 
@@ -277,7 +279,7 @@ levels(sites$dow)
 #Plot again
 ggplot(sites,aes(x=dow)) +
   geom_bar() + 
-  scale_x_discrete(drop=FALSE)
+  scale_x_discrete(drop=FALSE) # Overrides the default which drops anything with zero inputs
 
 ```
 
@@ -289,7 +291,7 @@ We can reorder levels simply by overwriting existing levels.
 
 #Reorder by overwriting the column with the existing values 
 # assigned with a new order of levels
-sites$dow <- factor(sites$dow, levels=c("1","2","3","4","5","6","7")) #Or... as.character(seq(1,7))
+sites$dow <- factor(sites$dow, levels=c("1","2","3","4","5","6","7")) #Or as.character(seq(1,7)) replaces levels=c...
 
 #See that the levels are updated
 levels(sites$dow)

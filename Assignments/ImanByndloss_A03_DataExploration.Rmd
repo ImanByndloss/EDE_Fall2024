@@ -52,18 +52,19 @@ Litter <- read.csv(
 
 2.  The neonicotinoid dataset was collected from the Environmental Protection Agency's ECOTOX Knowledgebase, a database for ecotoxicology research. Neonicotinoids are a class of insecticides used widely in agriculture. The dataset that has been pulled includes all studies published on insects. Why might we be interested in the ecotoxicology of neonicotinoids on insects? Feel free to do a brief internet search if you feel you need more background information.
 
-> Answer:
+> Answer: It is not surprising that there is substantial research on how neonicotinoids affect insects, given there are likely important questions regarding its efficacy, duration, and unintended consequences. The answers to such questions could influence the practice of using neonicotinoids. 
 
 3.  The Niwot Ridge litter and woody debris dataset was collected from the National Ecological Observatory Network, which collectively includes 81 aquatic and terrestrial sites across 20 ecoclimatic domains. 32 of these sites sample forest litter and woody debris, and we will focus on the Niwot Ridge long-term ecological research (LTER) station in Colorado. Why might we be interested in studying litter and woody debris that falls to the ground in forests? Feel free to do a brief internet search if you feel you need more background information.
 
-> Answer:
+> Answer: Researching forest litter and woody debris is likely valuable to determining the influence it has on the surrounding environment. Potentially important questions could surround its duration, chemical composition, and ecosystem roles.
 
 4.  How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here:
 
-> Answer: 
- 1.
- 2.
- 3. 
+> Answer:
+ 1. Spatial Sampling Design: Sampling occured at terrestrial NEON sites that contain woody vegetation greater than 2 meters tall and in randomly selected tower plots (within 90% flux footprint of the primary and secondary airsheds).
+ 2. Spatial Sampling Design: Trap size and placement depend on vegetation. For example, in sites with forested tower airsheds, the litter sampling occurred in
+20 40m x 40m plots while 4 40m x 40m tower plots and 26 20m x 20m plots are used in sites with low-statured vegetation over the tower airsheds.
+ 3. Temporal Sampling Design: Although ground traps are sampled once per year, elevated traps vary based on the surrounding vegetation, with biweekly sampling in deciduous forest sites and bimonthly sampling in evergreen forest sites.
 
 ## Obtain basic summaries of your data (Neonics)
 
@@ -77,13 +78,11 @@ dim(Neonics)
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest? [Tip: The `sort()` command is useful for listing the values in order of magnitude...]
 
 ```{r data summary 2.2}
-# Used summary() to produce a results summary, specifically for the "Effect" column in the Neonics dataframe with $.
-summary(Neonics$Effect)
-# Used sort() to list the values in order of magnitude for the "Effect" column in the Neonics dataframe.
-# sort(Neonics$Effect)
+# Used summary() to produce a results summary, specifically for the "Effect" column in the Neonics dataframe with $. This was done within sort(), so that the list of values was in order of magnitude (from least to greatest).
+sort(summary(Neonics$Effect))
 ```
 
-> Answer:
+> Answer: Population (1803), Mortality (1493) are by far the most common.
 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
@@ -92,8 +91,8 @@ summary(Neonics$Effect)
 # Used summary() to produce a results summary for the "Species.Common.Name" column in the Neonics dataframe.
 summary(Neonics$Species.Common.Name)
 
-# help(summary) describes maxsum as an "integer, indicating how many levels should be shown for factors". 
-# summary(Neonics$Species.Common.Name, maxsum=6)
+# help(summary) describes maxsum as an "integer, indicating how many levels should be shown for factors". With the last group being other, inputted 7 as the integer to ensure 6 species were displayed.
+summary(Neonics$Species.Common.Name, maxsum=7)
 ```
 
 > Answer:
@@ -106,27 +105,24 @@ class(Neonics$Conc.1..Author.)
 view(Neonics)
 ```
 
-> Answer:
+> Answer: Listed as factor. values less than sign, so converted to factor.
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r graphs 3.1}
-# After typing help("geom_freqpoly") in the console to learn how to use the function, used geom_freqpoly() to generate a plot for the Neonics dataframe of the number of studies versus publication year.
-# geom_freqpoly(
-#   mapping = NULL,
-#   data = Neonics,
-#   
-# )
-
+# After typing help("geom_freqpoly") in the console to learn how to use the function and looking back at 03_DataExploration_Part2.Rmd, used geom_freqpoly() to generate a plot for the Neonics dataframe of the number of studies versus publication year.
+ggplot(Neonics) +
+  geom_freqpoly(aes(x=Publication.Year))
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r graphs 3.2}
-
-
+# Based on the previous code, I added a line within aes() that specifies color will be determined by Test.Location, with color=Test.Location.
+ggplot(Neonics) +
+  geom_freqpoly(aes(x=Publication.Year, color=Test.Location))
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -138,8 +134,10 @@ Interpret this graph. What are the most common test locations, and do they diffe
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r graphs 3.3}
-
-
+# Used geom_bar() within ggplot() to create a bar graph of the "Endpoint" column in the Neonics dataframe, and added the suggested line above. 
+ggplot(Neonics) +
+  geom_bar(aes(x=Endpoint)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 > Answer:
@@ -149,15 +147,24 @@ Interpret this graph. What are the most common test locations, and do they diffe
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
 ```{r data exploration 4.1}
+# Used class() to determine the class for the "collectDate" column in the Litter dataframe. Used view() to view the dataframe.
+class(Litter$collectDate)
 
+# Looked at 03_DataExploration_Part1.Rmd for reference. Since it returned as a factor, used as.Date() to establish it as a date with the specified format Year-month-day, in which year was four digits (corresponding to "%Y", not "%y").
+Litter$collectDate <- as.Date(Litter$collectDate, format="%Y-%m-%d")
 
+# Used unique() to determine which dates litter was sampled during August 2018. Within the code the relevant format must be specified as well as the condition, e.g., format(Litter$collectDate, "%Y-%m") == "2018-08" which  extracts the year and day as well as checks if it corresponds to August 2018. unique collectDate values that meet the condition are returned.
+aug2018litter <- unique(Litter[format(Litter$collectDate, "%Y-%m") == "2018-08", "collectDate"] )
 ```
 
 13. Using the `unique` function, determine how many different plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r data exploration 4.2}
+# Used summary() for comparison to the output of the following code.
+summary(Litter$plotID)
 
-
+# Used unique() to determine the different plots and put it within length() to ensure that those plots were counted.
+length(unique(Litter$plotID))
 ```
 
 > Answer:
@@ -165,15 +172,21 @@ Interpret this graph. What are the most common test locations, and do they diffe
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r data exploration 4.3}
-
-
+# Used geom_bar() within ggplot() to create a bar graph of the "functionalGroup" column in the Litter dataframe. 
+ggplot(Litter) +
+  geom_bar(aes(x=functionalGroup))
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r data exploration 4.4}
+# Used geom_boxplot() within ggplot() to create a boxplot of the "functionalGroup" versus "dryMass" for the Litter dataframe.
+ggplot(Litter) +
+  geom_boxplot(aes(x=functionalGroup, y=dryMass))
 
-
+# Used geom_violin() within ggplot() to create a violin plot of the "functionalGroup" versus "dryMass" for the Litter dataframe.
+ggplot(Litter) +
+  geom_violin(aes(x=functionalGroup, y=dryMass))
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?

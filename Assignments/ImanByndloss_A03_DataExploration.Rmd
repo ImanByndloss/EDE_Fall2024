@@ -70,15 +70,17 @@ Litter <- read.csv(
 5.  What are the dimensions of the dataset?
 
 ```{r data summary 2.1}
-
-
+# Used dim() to retrieve the dimensions of the Neonics dataframe.
+dim(Neonics)
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest? [Tip: The `sort()` command is useful for listing the values in order of magnitude...]
 
 ```{r data summary 2.2}
-
-
+# Used summary() to produce a results summary, specifically for the "Effect" column in the Neonics dataframe with $.
+summary(Neonics$Effect)
+# Used sort() to list the values in order of magnitude for the "Effect" column in the Neonics dataframe.
+# sort(Neonics$Effect)
 ```
 
 > Answer:
@@ -87,8 +89,11 @@ Litter <- read.csv(
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
 
 ```{r data summary 2.3}
+# Used summary() to produce a results summary for the "Species.Common.Name" column in the Neonics dataframe.
+summary(Neonics$Species.Common.Name)
 
-
+# help(summary) describes maxsum as an "integer, indicating how many levels should be shown for factors". 
+# summary(Neonics$Species.Common.Name, maxsum=6)
 ```
 
 > Answer:
@@ -96,8 +101,9 @@ Litter <- read.csv(
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric? [Tip: Viewing the dataframe may be helpful...]
 
 ```{r data summary 2.4}
-
-
+# Used class() to determine the class for the "Conc.1..Author." column in the Neonics dataset. Used view() to view the dataframe.
+class(Neonics$Conc.1..Author.)
+view(Neonics)
 ```
 
 > Answer:
@@ -107,7 +113,12 @@ Litter <- read.csv(
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r graphs 3.1}
-
+# After typing help("geom_freqpoly") in the console to learn how to use the function, used geom_freqpoly() to generate a plot for the Neonics dataframe of the number of studies versus publication year.
+# geom_freqpoly(
+#   mapping = NULL,
+#   data = Neonics,
+#   
+# )
 
 ```
 

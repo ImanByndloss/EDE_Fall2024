@@ -90,10 +90,18 @@ EPA.PM25.NC2019$Date <- as.Date(EPA.PM25.NC2019$Date, format = "%m/%d/%Y")
 
 #4: Used select() to choose the relevant columns from each data frame.
 # Ensured it was saved to the appropriate place with "<-".
-EPA.O3.NC2018 <- select(EPA.O3.NC2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-EPA.O3.NC2019 <- select(EPA.O3.NC2019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-EPA.PM25.NC2018 <- select(EPA.PM25.NC2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-EPA.PM25.NC2019 <- select(EPA.PM25.NC2019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+EPA.O3.NC2018 <- select(EPA.O3.NC2018, Date, DAILY_AQI_VALUE, Site.Name,
+                        AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
+                        SITE_LONGITUDE)
+EPA.O3.NC2019 <- select(EPA.O3.NC2019, Date, DAILY_AQI_VALUE, Site.Name,
+                        AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
+                        SITE_LONGITUDE)
+EPA.PM25.NC2018 <- select(EPA.PM25.NC2018, Date, DAILY_AQI_VALUE, Site.Name,
+                          AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
+                          SITE_LONGITUDE)
+EPA.PM25.NC2019 <- select(EPA.PM25.NC2019, Date, DAILY_AQI_VALUE, Site.Name,
+                          AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, 
+                          SITE_LONGITUDE)
 
 #5: Used "=" to refill the relevant "AQS_PARAMETER_DESC" columns with "PM2.5".
 EPA.PM25.NC2018$AQS_PARAMETER_DESC = "PM2.5"
@@ -101,10 +109,18 @@ EPA.PM25.NC2019$AQS_PARAMETER_DESC = "PM2.5"
 
 #6: Used write.csv() to save and rename all datasets into the processed folder.
 # "row.names = FALSE" prevents the automatic inclusion of numbered rows.
-write.csv(EPA.O3.NC2018, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
-write.csv(EPA.O3.NC2019, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
-write.csv(EPA.PM25.NC2018, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
-write.csv(EPA.O3.NC2019, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
+write.csv(EPA.O3.NC2018, 
+          row.names = FALSE, 
+          file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(EPA.O3.NC2019, 
+          row.names = FALSE, 
+          file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
+write.csv(EPA.PM25.NC2018, 
+          row.names = FALSE, 
+          file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(EPA.O3.NC2019, 
+          row.names = FALSE, 
+          file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
 ```
 
 
@@ -136,21 +152,50 @@ write.csv(EPA.O3.NC2019, row.names = FALSE, file = "./Data/Processed/EPAair_PM25
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
 ```{r questions 7 thru 11}
-#7 
+#7: Used rbind() to combine the four data sets.
+# Renamed the combined data set.
+EPA.NC <- rbind(EPA.O3.NC2018, EPA.O3.NC2019, EPA.PM25.NC2018, EPA.PM25.NC2019)
+
+#8: Used the pipe function %>% to do the following...
+# Used filter() to include only common sites between the four data sets.
+# Used the split-apply-combine strategy to generate daily means;
+# this included using groupby() and summarise() with mean();
+# Notably, the in-class example also included filter(!is.na() & !is.na()...) for
+# all variables addressed in mean(). By default, the mean() function returns NA 
+# if there are any NA values in the column
+# Added columns for "Month" and "Year" by parsing "Date" column with mutate().
+EPA.NC.processed <- 
+  EPA.NC %>%
+  filter(Site.Name=="Linville Falls" | Site.Name=="Durham Armory" |
+           Site.Name=="Leggett" | Site.Name=="Hattie Avenue" |
+           Site.Name=="Clemmons Middle" | Site.Name=="Mendenhall School" |
+           Site.Name=="Frying Pan Mountain" | Site.Name=="West Johnston Co." |
+           Site.Name=="Garinger High School" | Site.Name=="Castle Hayne" |
+           Site.Name=="Pitt Agri. Center" | Site.Name=="Bryson City" |
+           Site.Name=="Millbrook School") %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(meanAQI = mean(DAILY_AQI_VALUE),
+            meanLAT = mean(SITE_LATITUDE), 
+            meanLONG = mean(SITE_LONGITUDE)) %>%
+  mutate(month=month(Date), year=year(Date))
+
+# Checked the dimensions with dim().
+dim(EPA.NC.processed)
+
+#9: Used pivot_wider() to spread the processed data frame,
+# so that O3 and PM2.5 were separate columns.
+EPA.NC.spread <- pivot_wider(EPA.NC.processed, 
+                             names_from = AQS_PARAMETER_DESC, 
+                             values_from = meanAQI)
+
+#10: Checked the dimensions with dim().
+dim(EPA.NC.spread)
 
 
-#8 
-
-
-#9
-
-
-#10
-
-
-#11
-
-
+#11: Used write.csv() to save and rename the new data frame.
+write.csv(EPA.NC.spread, 
+          row.names = FALSE, 
+          file = "./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 ```
 
 
@@ -161,17 +206,31 @@ write.csv(EPA.O3.NC2019, row.names = FALSE, file = "./Data/Processed/EPAair_PM25
 13. Call up the dimensions of the summary dataset.
 
 ```{r questions 12 and 13}
+#12: Used the pipe function %>% to do the following...
+# Used the split-apply-combine strategy to generate a summary data frame;
+# Used group_by() to form groups based on site, month, and year;
+# Used summarise() and mean() to generate the mean AQI values (ozone and PM2.5);
+# Used drop_na() to remove instances where meanO3 are NA.
+EPA.NC.summary <- 
+  EPA.NC.spread %>%
+  group_by(Site.Name, month, year) %>%
+  summarise(meanO3 = mean(Ozone),
+            meanPM25 = mean(PM2.5)) %>%
+  drop_na(meanO3)
+# Copied the previous code but used na.omit() instead of drop_na().
+EPA.NC.test <- 
+  EPA.NC.spread %>%
+  group_by(Site.Name, month, year) %>%
+  summarise(meanO3 = mean(Ozone),
+            meanPM25 = mean(PM2.5)) %>%
+  na.omit(meanO3)
 
-#12
-
-
-#13
-
-
-
+#13: Checked the dimensions with dim().
+dim(EPA.NC.summary)
+dim(EPA.NC.test)
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
-> Answer: 
+> Answer: drop_na() drops rows where any column contains a missing value while na.omit() returns the object with incomplete cases removed. drop_na() resulted in the data frame retaining more rows (182), in contrast to the 101 rows when using na.omit(). Based on this difference (and closer examination of the code), it becomes clear that na.omit() removed all NA, not only those associated with the "meanO3" column.
 

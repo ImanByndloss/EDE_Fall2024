@@ -40,14 +40,16 @@ library(cowplot)
 
 Nutrients <- read.csv(
   here(
-    "Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+  "Data/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"
   )
+  )
+
 Litter <- read.csv(
   here("Data/Processed_KEY/NEON_NIWO_Litter_mass_trap_Processed.csv")
   )
 
-#2: # Used class() to determine the class for "sampledate" and "collectDate" in the Nutrients and Litter dataframes. 
-# Used as.Date() to establish format for the "Date" column of each date frame.
+#2: # Used class() to determine class for date columns in the two dataframes. 
+# Used as.Date() to establish format for the date column of each date frame.
 # Ensured it was saved to the appropriate place with "<-".
 class(Nutrients$sampledate)
 Nutrients$sampledate <- as.Date(Nutrients$sampledate, format = "%Y-%m-%d")
@@ -70,14 +72,21 @@ custom_grid <- theme_base() +
   theme(
     panel.background = element_rect(fill="white"), 
     panel.grid.major = element_line(color="gray", linewidth = 0.4),
-    panel.grid.minor = element_line(color="gray", linewidth = 0.2), # Set a grey background with white grid lines
-    plot.title = element_text(size=10, face="bold",hjust=0.5), # Set text size, emboldened it, and centered plot title
-    axis.title = element_text(size=8), # Set text size for axis title
+    panel.grid.minor = element_line(color="gray", linewidth = 0.2), 
+    # Set a grey background with white grid lines
+    plot.title = element_text(size=10, face="bold",hjust=0.5), 
+    # Set text size, emboldened, and centered for plot title
+    axis.title = element_text(size=8), 
+    # Set text size for axis title
     axis.ticks = element_line(color="black"),
-    axis.ticks.length=unit(0.15,"cm"), # Set length of axis ticks
-    legend.box.background = element_rect(color="black", size=0.5), # Set a black border around legend
-    strip.text = element_text(face="bold", size=8), # Set the facet labels to bold small text
-    legend.position = "right" # Set legend position to right of graphs
+    axis.ticks.length=unit(0.15,"cm"), 
+    # Set length of axis ticks
+    legend.box.background = element_rect(color="black", size=0.5), 
+    # Set a black border around legend
+    strip.text = element_text(face="bold", size=8), 
+    # Set the facet labels to bold small text
+    legend.position = "right" 
+    # Set legend position to right of graphs
     )
 ```
 
@@ -87,19 +96,23 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add line(s) of best fit using the `lm` method. Adjust your axes to hide extreme values (hint: change the limits using `xlim()` and/or `ylim()`).
 
 ```{r plot total P vs PO4}
-#4: Used
-Nutrients %>%
+#4: Used ggplot() to graph "tp_ug" versus "po4" for Peter and Paul lakes
+tp.po4.plot <- Nutrients %>%
   ggplot(aes(x=tp_ug, y=po4)) +
   geom_point() +
   facet_wrap(facets=vars(lakename), nrow = 2) +
-  geom_smooth(method=lm, se=FALSE) + # se=FALSE removes shaded confidence interval
+  geom_smooth(method=lm, se=FALSE) + 
+  # se=FALSE removes shaded confidence interval
   labs(
     title="Total phsophorus versus phosphate for Peter and Paul lakes",
     x="Total Phosphorus",
     y="Phosphate") +
-  xlim(-4, 150) + # Adjusted to remove extra black space from x axis
-  ylim(0, 50) + # Adjusted to hide extreme value above 300 on y axis
+  xlim(-4, 150) + 
+  # Adjusted to remove extra black space from x axis
+  ylim(0, 50) + 
+  # Adjusted to hide extreme value above 300 on y axis
   custom_grid
+  # Added the customized theme
 ```
 
 
@@ -117,7 +130,7 @@ Tips:
 # Finally, used cowplot's plot_grid() to combine the plots.
 Nutrients$month <- factor(Nutrients$month, levels=1:12, labels=month.abb)
 
-Temp <- 
+temp.plot <- 
   ggplot(Nutrients, aes(x = month, y = temperature_C, color = lakename)) +
   geom_boxplot() +
   labs(
@@ -128,9 +141,9 @@ Temp <-
   scale_x_discrete(limits = month.abb[5:11]) + 
   # Set limit for x axis from May to Nov (the months with data for temp)
   custom_grid
-print(Temp)
+print(temp.plot)
   
-TP <- 
+tp.plot <- 
   ggplot(Nutrients, aes(x = month, y = tp_ug, color = lakename)) +
   geom_boxplot() +
   labs(
@@ -139,49 +152,75 @@ TP <-
     y="Total Phosphorous",
     color="Lake Name") +
   scale_x_discrete(limits = month.abb[5:11]) + 
-  ## Set limit for x axis from May to Nov (the months with data for temp for the sake of combining in the next step)
+  # Set limit for x axis from May to Nov (for the sake of upcoming combining)
   custom_grid
-print(TP)
+print(tp.plot)
 
-TN <-
+tn.plot <-
   ggplot(Nutrients, aes(x = month, y = tn_ug, color = lakename)) +
   geom_boxplot() +
   labs(
-    title="Temperature per month for Peter and Paul lakes",
+    title="Total nitrogen per month for Peter and Paul lakes",
     x="Month", 
     y="Total Nitrogen",
     color="Lake Name") +
   scale_x_discrete(limits = month.abb[5:11]) + 
-  # Set limit for x axis from May to Nov (the months with data for temp for the sake of combining in the next step)
+  # Set limit for x axis from May to Nov (for the sake of upcoming combining)
   custom_grid
-print(TN)
+print(tn.plot)
 
 library(cowplot)
 plot_grid(
-  Temp + theme(axis.title.x = element_blank(), legend.position = "none"), # Removed x axis title and legend
-  TP + theme(axis.title.x = element_blank(), legend.position="none"), # Removed x axis title and legend 
-  TN, 
-  nrow = 3, # nrow specifies the number of rows
-  align = 'v', # align ensures it is aligned vertically 'v' as opposed to horizontally 'h'
-  rel_heights = c(0.95, 1.15, 1.5)) # rel_heights establishes the relative heights of the plots; chosen based on size of y axis
+  temp.plot + theme(axis.title.x = element_blank(), legend.position = "none"), 
+  # Removed x axis title and legend
+  tp.plot + theme(axis.title.x = element_blank(), legend.position="none"), 
+  # Removed x axis title and legend 
+  tn.plot, 
+  nrow = 3, 
+  # nrow specifies the number of rows
+  align = 'v', 
+  # align ensures it is aligned vertically 'v' as opposed to horizontally 'h'
+  rel_heights = c(0.95, 1.15, 1.5)) 
+  # rel_heights establishes relative size for plots (based on y axis)
 ```
 
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: 
+> Answer: While temperature has readings for October and November, the other variables do not. With this information in mind, the three variables can only be compared from May to September. Still, it is important to note these three variables have varying scales (with total nitrogen having the largest and temperature having the smallest). To compare the data, all three variables appear to following the same general trend, presenting lower numbers in May which rise from June through August before slightly falling in September, but this observation more largely corresponds to the spread of the data than the (based on the box plots)
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into three facets rather than separated by color. 
 
 ```{r Plot litter}
-#6
+#6: Used ggplot() to plot "collectdate" vs "drymass" with "color=nlcdClass".
+needles.massdate.colorNLCD.plot <- Litter %>%
+  filter(functionalGroup=="Needles") %>%
+  ggplot(aes(x=collectDate, y=dryMass, color=nlcdClass)) +
+  geom_point() +
+  labs(
+    title="Dry mass over time for needles with varying NLCD classes",
+    x="Date", 
+    y="Dry Mass",
+    color="NLCD Class") +
+  custom_grid
+print(needles.massdate.colorNLCD.plot)
 
-
-#7
-
-
+#7: Used ggplot() to plot "collectDate" vs "dryMass".
+# Adding a facet_wrap() for "nlcdClass" instead of using "color=".
+# This change result in the NLCD classes being graphed separately.
+needles.massdate.facetNLCD.plot <- Litter %>%
+  filter(functionalGroup=="Needles") %>%
+  ggplot(aes(x=collectDate, y=dryMass)) +
+  geom_point() +
+  facet_wrap(facets=vars(nlcdClass), nrow = 3) +
+  labs(
+    title="Dry mass over time for needles with varying NLCD classes",
+    x="Date", 
+    y="Dry Mass") +
+  custom_grid
+print(needles.massdate.facetNLCD.plot)
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer:
+> Answer: In my opinion, plot 7 (with facets instead of colors) is more effective due to the number of points on the graph when the NLCD classes are plotted on one graph. With such a high number of points, plot 6 appears crowded (especially below 10 for dry mass where most of the points are concentrated). Such a depiction makes plot 6 more difficult to analyze and compare the data for each class.

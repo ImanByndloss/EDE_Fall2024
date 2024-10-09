@@ -225,4 +225,4 @@ print(needles.massdate.facetNLCD.plot)
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer: In my opinion, plot 7 (with facets instead of colors) is more effective due to the high number of points plotted when all NLCD classes are on the same graph. With such a high number of points, plot 6 appears crowded (especially below 10 for dry mass where most of the points are concentrated). Such a depiction makes plot 6 more difficult to analyze.
+> Answer: In my opinion, plot 7 (with facets instead of colors) is more effective due to the high number of points plotted when all NLCD classes are on the same graph. With such a high number of points, plot 6 appears crowded (especially below 10 for dry mass where most of the points are concentrated). Such a depiction makes plot 6 more difficult to analyze in this case, but basing colors on a variable may be more useful in other cases; for example, if there are less categories or if the data can be depicted in a bar graph.

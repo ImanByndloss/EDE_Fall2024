@@ -67,7 +67,9 @@ Litter$collectDate <- as.Date(Litter$collectDate, format = "%Y-%m-%d")
 
 ```{r build plot theme}
 #3: Looked up help(theme).
+# Loaded the relevant package.
 # Used theme_base() + theme() to establish a custom theme.
+library(ggthemes)
 custom_grid <- theme_base() + 
   theme(
     panel.background = element_rect(fill="white"), 
@@ -186,7 +188,7 @@ plot_grid(
 
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: While temperature has readings for October and November, the other variables do not. With this information in mind, the three variables can only be compared from May to September. Still, it is important to note these three variables have varying scales (with total nitrogen having the largest and temperature having the smallest). To compare the data, temperature displays a lower median in May which notably rises from June through September before sharply declining in October (which seemingly continues into November but data appear limited) for each lake; total phosphorous displays increasing medians from May through September for Peter Lake but deecreasing medians from May through August before increasing in September for Paul Lake; and total nitrogen displays relatively consistent medians (with slight increases) from May through September for each lake.
+> Answer: While temperature has readings for October and November, the other variables do not. With this information in mind, the three variables can only be compared from May to September. Still, it is important to note these three variables have varying scales (with total nitrogen having the largest and temperature having the smallest). To compare the data, temperature displays a lower median in May which notably rises from June through September before sharply declining in October (which seemingly continues into November but data appears limited) for each lake; total phosphorous displays increasing medians from May through September for Peter Lake but decreasing medians from May through August before increasing in September for Paul Lake; and total nitrogen displays relatively consistent medians (with only slight fluctuations) from May through September for each lake. Based on these observations, I would assume that these three variables are not very highly correlated, but there may be slight influence in temperature on the availability of phosphorous and nitrogen (direct or indirect relationships). More data is required to make any definitive conclusions.
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
@@ -223,4 +225,4 @@ print(needles.massdate.facetNLCD.plot)
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer: In my opinion, plot 7 (with facets instead of colors) is more effective due to the number of points on the graph when the NLCD classes are plotted on one graph. With such a high number of points, plot 6 appears crowded (especially below 10 for dry mass where most of the points are concentrated). Such a depiction makes plot 6 more difficult to analyze and compare the data for each class.
+> Answer: In my opinion, plot 7 (with facets instead of colors) is more effective due to the high number of points plotted when all NLCD classes are on the same graph. With such a high number of points, plot 6 appears crowded (especially below 10 for dry mass where most of the points are concentrated). Such a depiction makes plot 6 more difficult to analyze.

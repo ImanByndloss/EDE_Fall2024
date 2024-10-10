@@ -5,10 +5,13 @@ runtime: shiny
 ---
   
 ```{r, echo = FALSE}
-numericInput("n",
-"How many cars?", 5)
+numericInput(
+  "n", # inputID
+  "How many cars?", # label
+  5) # value
+
 renderTable({
-head(cars, input$n)
+  head(cars, input$n)
 })
 ```
 

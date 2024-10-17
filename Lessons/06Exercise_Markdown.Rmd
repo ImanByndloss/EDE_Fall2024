@@ -1,15 +1,18 @@
 ---
 title: "Exercise: Markdown"
 author: "Environmental Data Analytics | John Fay and Luana Lima "
-output: pdf_document
+output: 
+  pdf_document: 
+    toc: TRUE
 geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
 ---
+\listoftables
 
 ## Set up the coding environment
 
-```{r setup}
+```{r setup, echo=FALSE, warning=FALSE}
 #Load packages
 library(tidyverse);library(here);library(lubridate)
 
@@ -44,3 +47,8 @@ nutrient_data_tn <- nutrient_data %>%
 ```
 
 ## Report the summary
+```{r}
+knitr::kable(nutrient_data_tn, 
+             caption = "Summary Stats for Total Nitrogen")
+```
+

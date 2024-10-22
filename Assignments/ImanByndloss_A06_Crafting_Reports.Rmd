@@ -145,4 +145,4 @@ Add a table of contents and list of figures to your document and knit to a PDF. 
 
 ## Git Repository
 
-https://github.com/ImanByndloss/EDE_Fall2024.git
+[ImanByndloss](https://github.com/ImanByndloss/EDE_Fall2024.git)

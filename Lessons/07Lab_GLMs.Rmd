@@ -48,8 +48,36 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 
 ```{r}
 #Exercise 1:
+G1 <- EPAair %>%
+  ggplot(aes(x=Ozone,fill=as.factor(Year))) +
+  geom_density(alpha=0.5) + #incorporates transparency with
+  #scale_fill_manual((values=c("red","blue"))) +
+  labs(x="Ozone AQI Value", y="Density", fill="")
+G1                    
 
+G2 <- EPAair %>%
+  ggplot(aes(x=as.factor(Year), y=Ozone)) +
+  geom_boxplot() +
+  stat_summary(geom = "text", 
+               fun = max, 
+               vjust = -1, 
+               size = 3.5,
+               label = c("a", "b")) +
+  labs(x="Year",y="Ozone") +
+  ylim(0,150)
+G2
 
+G3 <- EPAair %>%
+  ggplot(aes(y=Ozone, x=Year)) +
+  geom_violin(draw_quantiles = 0.5) +
+  stat_summary(geom = "text", 
+               fun = max, 
+               vjust = -1, 
+               size = 3.5,
+               label = c("a", "b")) +
+  labs(x="Year",y="Ozone") +
+  ylim(0,150)
+G3
 ```
 
 ## Linear Regression
@@ -61,13 +89,14 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 ```{r}
 
 #Exercise 2: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
-
-
+summary(lm(data=EPAair, PM2.5 ~ Ozone))
 
 #Exercise 3: Build a scatterplot. Add a line and standard error for the linear regression. Add the regression equation to the plot
-
-
-
+Scatterplot <- ggplot(EPAair, aes(x=Ozone, y=PM2.5)) +
+  geom_point() + #adds points for scatterplot
+  geom_smooth(method="lm") + #adds regression line
+  geom_text(x=100,y=75,label=expression("PM2.5=0.38*Ozone+15.64"))
+Scatterplot
 ```
 
 
@@ -78,14 +107,19 @@ What other variables can we add to improve model?
 ```{r}
 
 #Exercise 4: Build correlation plots and identify more possible explanatory variables to add to the regression.
-
-
-
+#install.packages("corrplot")
+library(corrplot)
+EPAvar <- EPAair %>%
+  select(mean_Lat:Ozone) %>%
+  na.omit()
+EPAcorr <- cor(EPAvar)
+corrplot(EPAcorr, method = "ellipse")
+EPAcorr
 
 #Exercise 5: Choose a model by AIC in a Stepwise Algorithm. Do the results from AIC match the variables you selected on Exercise 4?
-
-
-
+OzoneALL.reg <- lm(data=EPAair, PM2.5 ~ Ozone + Year + Month + mean_Lng + mean_Lat)
+summary(OzoneALL.reg)
+step(OzoneALL.reg)
 
 #Exercise 6: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 2. 
 

@@ -26,11 +26,43 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 2. Build a ggplot theme and set it as your default theme.
 
 ```{r setup2}
-#1
+#1 
+# Used getwd() to check the working directory.
+getwd()
 
+# Used library() to load relevant packages.
+library(tidyverse)
+library(agricolae)
+library(here)
+library(ggthemes)
+
+# Used read.csv() and here() to import specified NTL-LTER raw data file.
+LakeChemistry <- read.csv(here(
+  "Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), 
+  stringsAsFactors = TRUE)
 
 #2
-
+# COPIED FROM A05: Used theme_base() + theme() to establish a custom theme.
+custom_grid <- theme_base() + 
+  theme(
+    panel.background = element_rect(fill="white"), 
+    panel.grid.major = element_line(color="gray", linewidth = 0.4),
+    panel.grid.minor = element_line(color="gray", linewidth = 0.2), 
+    # Set a grey background with white grid lines
+    plot.title = element_text(size=10, face="bold",hjust=0.5), 
+    # Set text size, emboldened, and centered for plot title
+    axis.title = element_text(size=8), 
+    # Set text size for axis title
+    axis.ticks = element_line(color="black"),
+    axis.ticks.length=unit(0.15,"cm"), 
+    # Set length of axis ticks
+    legend.box.background = element_rect(color="black", size=0.5), 
+    # Set a black border around legend
+    strip.text = element_text(face="bold", size=8), 
+    # Set the facet labels to bold small text
+    legend.position = "right" 
+    # Set legend position to right of graphs
+    )
 
 ```
 
@@ -39,8 +71,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: The mean lake temperature recorded during July does not change significantly with depth across all lakes.
+Ha: The mean lake temperature recorded during July changes significantly with depth across all lakes.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -52,32 +84,66 @@ Ha:
 
 ```{r scatterplot}
 #4
+# Prior to any data manipulation,
+# used class() to determine the class for the "sampledate" in the dataframe. 
+class(LakeChemistry$sampledate)
 
+# And since it returned as a factor, 
+# used as.Date() to establish it as a date with the format %Y-%m-%d.
+# The four digit year corresponds to "%Y", not "%y".
+LakeChemistry$sampledate <- as.Date(LakeChemistry$sampledate, format="%m/%d/%Y")
+
+# Extracted month from "sampledate" in preparation for filtering.
+LakeChemistry$month <- month(LakeChemistry$sampledate)
+
+# Converted month to a factor with 12 levels, labelled with month names.
+LakeChemistry$month <- factor(LakeChemistry$month, 
+                                         levels=1:12, 
+                                         labels=month.abb)
+
+# Filtered the dataframe as suggested, using %>% (pipe function).
+FilteredLakeChemistry <- LakeChemistry %>%
+  filter(month=="Jul") %>%
+  select(lakename,year4,daynum,depth,temperature_C) %>%
+  na.omit() # na.omit() removes all NA values while drop_na() specified columns
 
 #5
-
+# Based on suggested parameters,
+# created a scatter plot of temp vs depth with multiple functions.
+tempVSdepth <- FilteredLakeChemistry %>%
+  filter(temperature_C>=0 & temperature_C<=35) %>%
+  ggplot(aes(x=depth,y=temperature_C)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  ylim(0,35) +
+  labs(x="Depth (m)", y="Temperature (°C)") +
+  custom_grid
+tempVSdepth
 
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: Based on the figure, as depth increases, temperature decreases; in other words, there is an inverse relationship between these two variables. The distribution of points suggests that the linearity of this trend is not consistent for all depths, with the deepest parts of the lakes from ~10-15m displaying similar temperatures.
 
 
 7. Perform a linear regression to test the relationship and display the results.
 
 ```{r linear.regression}
 #7
-
-
+# Fit a simple linear regression to the two variables with lm().
+# Used summary() to produce a result summary.
+tempVSdepth.regression <- 
+  lm(FilteredLakeChemistry$temperature_C ~ 
+       FilteredLakeChemistry$depth)
+summary(tempVSdepth.regression)
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
-
+> Answer: According to the linear regression model, there is a statitically significant inverse relationship between temperature and depth; for every 1 meter increase in depth, there is an approximate 1.95°C decrease in temperature (Estimate = -1.95, t value = -165.8, p value = <2e-16). Depth explains 74% of variablilty in temperature with 9726 degrees of freedom (Adjusted R-squared=0.7387). Ultimately, the null hypothesis is rejected in favor of the alternative hypothesis.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: GLMs (Linear Regressios, ANOVA, & t-tests)"
-author: "Student Name"
+author: "Iman Byndloss"
 date: "Fall 2024"
 output: pdf_document
 geometry: margin=2.54cm
@@ -128,16 +128,15 @@ tempVSdepth
 #7
 # Fit a simple linear regression to the two variables with lm().
 # Used summary() to produce a result summary.
-tempVSdepth.regression <- 
-  lm(FilteredLakeChemistry$temperature_C ~ 
-       FilteredLakeChemistry$depth)
+tempVSdepth.regression <- lm(
+  FilteredLakeChemistry$temperature_C ~ FilteredLakeChemistry$depth)
 summary(tempVSdepth.regression)
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer: According to the linear regression model, there is a statitically significant inverse relationship between temperature and depth; for every 1 meter increase in depth, there is an approximate 1.95°C decrease in temperature (Estimate = -1.95, t value = -165.8, p value = <2e-16). Depth explains 74% of variablilty in temperature with 9726 degrees of freedom (Adjusted R-squared=0.7387). Ultimately, the null hypothesis is rejected in favor of the alternative hypothesis.
+> Answer: According to the linear regression model, there is a statitically significant inverse relationship between temperature and depth; for every 1 meter increase in depth, there is an approximate 1.95°C decrease in temperature (Estimate = -1.95, t value = -165.8, p value = <2e-16). Depth explains 73.87% of variablilty in temperature with 9726 degrees of freedom (Adjusted R-squared = 0.7387). Ultimately, the null hypothesis is rejected in favor of the alternative hypothesis.
 
 ---
 
@@ -151,7 +150,8 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r temperature.model}
 #9
-temp.ALL.regression <- lm(data=FilteredLakeChemistry, temperature_C ~ year4 + daynum + depth)
+temp.ALL.regression <- lm(data=FilteredLakeChemistry, 
+                          temperature_C ~ year4 + daynum + depth)
 step(temp.ALL.regression)
 
 #10
@@ -161,7 +161,7 @@ summary(temp.ALL.regression)
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: With the AIC being smallest with all three variables (AIC=26065.53), the AIC method suggests "year4", "daynum", and "depth" all be included as explanatory variables to predict temperature in a multiple regression. This model explains 74.11% of the observed variance (Adjusted R-squared=0.7411), which is a slight improvement from the previous model that only contained depth as an explanatory variable.
+> Answer: Since the AIC is smallest with all three variables (AIC=26065.53), the AIC method suggests "year4", "daynum", and "depth" should all be included as explanatory variables to predict temperature in a multiple regression. This model explains 74.11% of the observed variance (Adjusted R-squared=0.7411), which is a slight improvement from the previous model that only contained depth as an explanatory variable.
 
 ---
 
@@ -183,7 +183,7 @@ summary(temp.lake.LM)
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: There is a significant difference in mean temperature among the lakes (F value=50, p value=<2e-16). The same can be said for the lakes individually, with all  thusly, the null hypothesis ca
+> Answer: There is a significant difference in mean temperature among the lakes (Df = 8, F value = 50, p value = <2e-16). Notably, the summary of the linear model is more detailed. Still, the results are the same with all lakes proving to not have equal mean temperatures, so the null hypothesis can be rejected. 
 
 
 
@@ -209,15 +209,14 @@ tempVSdepth4LAKES
 ```{r tukey.test}
 #15
 # Used TukeyHSD() to run a Tukey's HSD on the previous one-way ANOVA
+# This test explores the differences between multiple group means
 TukeyHSD(temp.lake.AOV)
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer: Lakes with the same mean temperature, statistically speaking, as Peter Lake include Paul Lake and Ward Lake. Notably, none of the lakes have a mean temperature that is statistically distinct from all the other lakes. 
-
-DELETE BEFORE TURNING IN 1) Crampton Lake-Central Long Lake, 2) Ward Lake-Crampton Lake, 3) Hummingbird Lake-East Long Lake, 4) Tuesday Lake-East Long Lake, 5) Tuesday Lake-Hummingbird Lake, 6) West Long Lake-Hummingbird Lake, 7) Peter Lake-Paul Lake, 8) Ward Lake-Paul Lake, 9) Ward Lake-Peter Lake, and 10) West Long Lake-Tuesday Lake.
+>Answer: Lakes with the same mean temperature, statistically speaking, as Peter Lake include Paul Lake (p-value = 0.2241586) and Ward Lake (p-value = 0.7827037). Also, none of the lakes have a mean temperature that is statistically distinct from all the other lakes; in other words, each lake has a statistically equal mean temperature with at least one other lake.
 
  
 
@@ -231,18 +230,21 @@ DELETE BEFORE TURNING IN 1) Crampton Lake-Central Long Lake, 2) Ward Lake-Crampt
 
 ```{r t.test}
 # Filtered the dataframe to only include records for Crampton and Ward Lakes
+# within filter(), instead of using & within the filter, used | to act as or
 CramptonWardLakeChemistry <- FilteredLakeChemistry %>%
-  filter(lakename=="Crampton Lake" | lakename=="Ward Lake") #instead of using & within the filter, used | to act as or
+  filter(lakename=="Crampton Lake" | lakename=="Ward Lake") 
 
 # Ran a two-sample T-test, using t.test()...
 # with temperature_C as dependent variable and lakename as categorical variable
-temp.lake.TTEST <- t.test(CramptonWardLakeChemistry$temperature_C ~ CramptonWardLakeChemistry$lakename)
+temp.lake.TTEST <- t.test(
+  CramptonWardLakeChemistry$temperature_C ~ CramptonWardLakeChemistry$lakename)
 temp.lake.TTEST
 
-# The same test can also be formated with lm()...
-# temp.lake.TTEST <- lm(CramptonWardLakeChemistry$temperature_C ~ CramptonWardLakeChemistry$lakename)
-# summary(temp.lake.TTEST)
+#The same test can also be formated with lm()...
+#temp.lake.TTEST <- lm(
+  #CramptonWardLakeChemistry$temperature_C ~ CramptonWardLakeChemistry$lakename)
+#summary(temp.lake.TTEST)
 
 ```
 
->Answer: Based on the results of the two-sample T-test, the Crampton and Ward Lakes statistically have the same means (t=1.1181,df=200.37,p-value=0.2649). The sample estimate for Crampton Lake is about 15.35 while the sample estimate for Ward Lake is about 14.46.
+>Answer: Based on the results of the two-sample T-test, the Crampton and Ward Lakes statistically have the same means (p-value=0.2649). The sample estimate for Crampton Lake is about 15.35 while the sample estimate for Ward Lake is about 14.46. These results resemble the results of the Tukey's HSD test, which also returned Crampton and Ward Lakes as statistically the same means (p adj=0.9714459). In both cases, the null hypothesis is not rejected.

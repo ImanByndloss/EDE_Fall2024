@@ -27,15 +27,99 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 * Set your ggplot theme
 
 ```{r}
+#1
+# Used getwd() to check the working directory.
+getwd()
 
+# Used library() to load relevant packages.
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
+
+library(ggthemes)
+library(here)
+
+# COPIED FROM A05: Used theme_base() + theme() to establish a custom theme.
+custom_grid <- theme_base() + 
+  theme(
+    panel.background = element_rect(fill="white"), 
+    panel.grid.major = element_line(color="gray", linewidth = 0.4),
+    panel.grid.minor = element_line(color="gray", linewidth = 0.2), 
+    # Set a grey background with white grid lines
+    plot.title = element_text(size=10, face="bold",hjust=0.5), 
+    # Set text size, emboldened, and centered for plot title
+    axis.title = element_text(size=8), 
+    # Set text size for axis title
+    axis.ticks = element_line(color="black"),
+    axis.ticks.length=unit(0.15,"cm"), 
+    # Set length of axis ticks
+    legend.box.background = element_rect(color="black", size=0.5), 
+    # Set a black border around legend
+    strip.text = element_text(face="bold", size=8), 
+    # Set the facet labels to bold small text
+    legend.position = "right" 
+    # Set legend position to right of graphs
+    )
 ```
 
 
 2. Import the ten datasets from the Ozone_TimeSeries folder in the Raw data folder. These contain ozone concentrations at Garinger High School in North Carolina from 2010-2019 (the EPA air database only allows downloads for one year at a time). Import these either individually or in bulk and then combine them into a single dataframe named `GaringerOzone` of 3589 observation and 20 variables. 
 
 ```{r, message = FALSE}
-#1
+#2
+# Used read.csv() and here() to import specified raw data files.
+G2010 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv"), 
+  stringsAsFactors = TRUE)
 
+G2011 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2012 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2013 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2014 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2015 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2016 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2017 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2018 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+G2019 <- read.csv(here(
+  "Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv"), 
+  stringsAsFactors = TRUE)
+
+# Used rbind() to combine datasets for each year into one large data frame.
+GaringerOzone <- rbind(G2010,
+                       G2011,
+                       G2012,
+                       G2013,
+                       G2014,
+                       G2015,
+                       G2016,
+                       G2017,
+                       G2018,
+                       G2019)
 ```
 
 ## Wrangle
@@ -49,14 +133,30 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 6. Use a `left_join` to combine the data frames. Specify the correct order of data frames within this function so that the final dimensions are 3652 rows and 3 columns. Call your combined data frame GaringerOzone. 
 
 ```{r}
-# 3
+#3
+# Used as.Date() to establish sampledate as a date with the format %m/%d/%Y.
+# The four digit year corresponds to "%Y", not "%y".
+GaringerOzone$Date <- as.Date(GaringerOzone$Date, format="%m/%d/%Y")
 
-# 4
+#4
+# Used select() to choose only relevant columns for the data frame.
+GaringerOzone <- select(GaringerOzone, 
+                        Date, 
+                        Daily.Max.8.hour.Ozone.Concentration, 
+                        DAILY_AQI_VALUE)
 
-# 5
+#5
+# Used as.data.frame() & seq() to create a new data frame for select dates.
+Days <- as.data.frame(seq(from=as.Date("01/01/2010", format="%m/%d/%Y"),
+                          to=as.Date("12/31/2019", format="%m/%d/%Y"), 
+                          by="day"))
 
-# 6
+# Used colnames() & c() to rename the column.
+colnames(Days) <- c("Date")
 
+#6
+# Combined two data frames with left_join().
+GaringerOzone <- left_join(Days, GaringerOzone, by="Date")
 
 ```
 
@@ -66,10 +166,15 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r}
 #7
-
+# Used ggplot() to create a line plot of ozone concentrations over time.
+ggplot(GaringerOzone, aes(x=Date, y=Daily.Max.8.hour.Ozone.Concentration)) +
+  geom_line() +
+  geom_smooth(method="lm") +
+  labs(x="Date",y="Ozone Concentration (ppm)")
+  custom_grid
 ```
 
->Answer:
+>Answer: Based on the plot, there is a slight decrease in ozone concentrations (ppm) over time.
 
 ## Time Series Analysis
 
@@ -79,10 +184,15 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
+# Adding new column with no missing obs, just for illustration purpose
+# In real applications you will simply replace NAs
+GaringerOzoneClean <- GaringerOzone %>% 
+  mutate(Daily.Max.8.hour.Ozone.Concentration.Clean = zoo::na.approx(Daily.Max.8.hour.Ozone.Concentration))
 
+summary(GaringerOzoneClean$Daily.Max.8.hour.Ozone.Concentration.Clean)
 ```
 
-> Answer: 
+> Answer: There are three types of interpolation: 1) piecewise constant, 2) linear, and 3) spline. Piecewise constant interpolation assumes any missing data are equal to the closest measurement to that date. Linear interpolation assumes any missing data are between the previous and next measurements, drawing a straight line between known points. Lastly, spline interpolation is similar to linear interpolation except it uses a quadratic function instead of a straight line. In the case of this research, linear interpolation is best due to the fact that the relationship is linear and displays gradual daily changes. Notably, spline interpolation does not display linear relationships and piecewise constant interpolation is not ideal for more gradual changes.
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)

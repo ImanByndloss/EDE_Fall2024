@@ -27,12 +27,15 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 2.    Execute the `here()` command to display the current project directory
 
 ```{r Prepare workspace, error=F, warning=F}
-#1. 
+#1. Import relevant libraries
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(here)
+library(mapview)
 
-
-#2. 
-
-
+#2. Check the current project directory
+here()
 ```
 
 

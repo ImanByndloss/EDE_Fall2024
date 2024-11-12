@@ -225,15 +225,29 @@ Now let's zoom into a particular county and examine the gages located there.
 ```{r spatial selection}
 #22 Select the county
 Lancaster <- NEcounties %>%
-  filter(NAME == Lancaster)
+  filter(NAME == "Lancaster")
 
 #23 Spatially select gages within the selected county
-
+LancasterIntersects <- st_intersects(NWISsites.sf, Lancaster, 
+                                     sparse = FALSE)
+Lancaster.NWISsites.sf <- NWISsites.sf[LancasterIntersects,]
 
 #24 Spatially select gages within 15 k of the selected county
+LancasterBuffer <- st_buffer(Lancaster, dist = 15000)
+LancasterBufferIntersects <- st_intersects(NWISsites.sf, LancasterBuffer, 
+                                           sparse = FALSE)
+LancasterBuffer.NWISsites.sf <- NWISsites.sf[LancasterBufferIntersects,]
 
-
-#25 Plot
-
-
+#25 Plot in order of what data should be on top of the other
+ggplot() +
+  geom_sf(data = NEcounties, 
+          color = "black", 
+          fill = "grey") + 
+  geom_sf(data = Lancaster, 
+          color = "gold",
+          fill = "yellow") +
+    geom_sf(data = LancasterBuffer.NWISsites.sf, 
+          color = "pink") +
+  geom_sf(data = Lancaster.NWISsites.sf, 
+          color = "violet")
 ```

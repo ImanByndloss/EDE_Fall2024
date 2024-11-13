@@ -1,8 +1,10 @@
 ---
-title: "Assignment 9: Spatial Analysis in R"
+title: 'Assignment 9: Spatial Analysis in R'
 author: "Iman Byndloss"
-output: html_document
-editor_options: 
+output:
+  html_document: default
+  pdf_document: default
+editor_options:
   chunk_output_type: console
 ---
 
@@ -155,8 +157,8 @@ colnames(NWISflow)
 #16. Join the flow data to our NWIS gage location spatial dataframe
 # According to Help tab... 
 # inner_join() only keeps observations from x that have a matching key in y
-NWIScomplete <- inner_join(NWISsites.sf, NWISflow, by=c("site_no", "station_nm"))
-
+NWIScomplete <- inner_join(NWISsites.sf, NWISflow, 
+                           by=c("site_no", "station_nm"))
 
 #17. Show the column names in the resulting spatial dataframe
 colnames(NWIScomplete)
@@ -224,30 +226,36 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r spatial selection}
 #22 Select the county
-Lancaster <- NEcounties %>%
+Lancaster <- NEcounties.utm %>%
   filter(NAME == "Lancaster")
 
 #23 Spatially select gages within the selected county
-LancasterIntersects <- st_intersects(NWISsites.sf, Lancaster, 
+LancasterIntersects <- st_intersects(NWISsites.sf.utm, Lancaster, 
                                      sparse = FALSE)
-Lancaster.NWISsites.sf <- NWISsites.sf[LancasterIntersects,]
+Lancaster.NWISsites.sf <- NWISsites.sf.utm[LancasterIntersects,]
 
 #24 Spatially select gages within 15 k of the selected county
 LancasterBuffer <- st_buffer(Lancaster, dist = 15000)
-LancasterBufferIntersects <- st_intersects(NWISsites.sf, LancasterBuffer, 
+LancasterBufferIntersects <- st_intersects(NWISsites.sf.utm, LancasterBuffer, 
                                            sparse = FALSE)
-LancasterBuffer.NWISsites.sf <- NWISsites.sf[LancasterBufferIntersects,]
+LancasterBuffer.NWISsites.sf <- NWISsites.sf.utm[LancasterBufferIntersects,]
 
 #25 Plot in order of what data should be on top of the other
+# Ensure the gage locations are semitransparent, 
+# i.e., not completely covering county lines
 ggplot() +
-  geom_sf(data = NEcounties, 
+  geom_sf(data = NEcounties.utm, 
           color = "black", 
           fill = "grey") + 
   geom_sf(data = Lancaster, 
           color = "gold",
           fill = "yellow") +
     geom_sf(data = LancasterBuffer.NWISsites.sf, 
-          color = "pink") +
+          color = "pink",
+          alpha = 0.8) +
   geom_sf(data = Lancaster.NWISsites.sf, 
-          color = "violet")
+          color = "violet",
+          alpha = 0.8) +
+  labs(title = "NWIS Gage Sites in (and within 15km of) Lancaster County, NE", 
+       subtitle = "Iman Byndloss")
 ```

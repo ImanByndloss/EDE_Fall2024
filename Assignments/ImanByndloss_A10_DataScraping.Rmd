@@ -40,7 +40,7 @@ here()
 Indicate this website as the as the URL to be scraped. (In other words, read the contents into an `rvest` webpage object.)
 
 ```{r set.the.scraping.website}
-#2 Fetch the resources from the web address
+#2 Read the resources from the web address into a webpage object
 webpage <- read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2023')
 ```
 
@@ -60,8 +60,13 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 #3 
-
-
+# From the "1. System Information" section:
+# Water system name
+# PWSID
+# Ownership
+ 
+# From the "3. Water Supply Sources" section:
+# Maximum Day Use (MGD) - for each month
 ```
 
 

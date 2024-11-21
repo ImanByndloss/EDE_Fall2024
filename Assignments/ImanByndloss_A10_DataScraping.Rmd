@@ -149,7 +149,7 @@ scrape.it <- function(PWSID, Year){
   Ownership <- webpage %>% html_nodes(Ownership_tag) %>% html_text()
   MGD <- webpage %>% html_nodes(MGD_tag) %>% html_text()
   
-  # Convert to a dataframe
+  # Convert to a data frame
   dfLWSP <- data.frame("WaterSystem" = rep(WaterSystem, 12),
                        "PWSID" = rep(PWSID, 12), 
                        "Ownership" = rep(Ownership, 12),
@@ -163,7 +163,7 @@ scrape.it <- function(PWSID, Year){
                                                   "May", "Jun", "Jul", "Aug", 
                                                   "Sep", "Oct", "Nov", "Dec"))
   
-  # Return the dataframe
+  # Return the data frame
   return(dfLWSP)
 }
 ```
@@ -217,4 +217,4 @@ ggplot(Asheville2018to2022, aes(x = Month, y = MGD,
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
 > Answer:
-> Generally, water usage in Asheville peaks in the summer months between June and August and valleys in the winter between January and March. Still, from year to year, the extent of usage varies, but almost all records for maximum daily use are in the 20s.
+> Generally, according to the trend line, water usage in Asheville peaks in the summer months between June and August and valleys in the winter between January and March. Still, from year to year, there is variation, particularly for the extent of usage, but almost all records for maximum daily use are in the 20s.

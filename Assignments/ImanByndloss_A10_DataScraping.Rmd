@@ -222,7 +222,7 @@ ggplot(Asheville2018to2022, aes(x = Date, y = MGD)) +
   geom_line(color = "black") +
   geom_smooth(method = "loess", se = FALSE, color = "red") +
   labs(title = "MGD per month for the Asheville water system from 2018 to 2022", 
-       x = "Month", 
+       x = "Date", 
        y = "Max Day Use (MGD)",
        color = "Year")
 ```

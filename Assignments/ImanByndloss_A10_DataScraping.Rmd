@@ -44,7 +44,8 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 
 ```{r set.the.scraping.website}
 #2 Read the resources from the web address into a webpage object
-webpage <- read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2023')
+webpage <- read_html(
+  'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2023')
 ```
 
 3. The data we want to collect are listed below:
@@ -156,7 +157,8 @@ scrape.it <- function(PWSID, Year){
                        "Month" = c("Jan", "May", "Sep", "Feb", "Jun", "Oct",
                                    "Mar", "Jul", "Nov", "Apr", "Aug", "Dec"),
                        "Year" = rep(Year, 12),
-                       "Date"=as.Date(paste("01", Month, Year, sep = "-"), format = "%d-%b-%Y"),
+                       "Date"=as.Date(paste("01", Month, Year, sep = "-"), 
+                                      format = "%d-%b-%Y"),
                        "MGD" = as.numeric(MGD))
   
   dfLWSP$Month <- factor(dfLWSP$Month, levels = c("Jan", "Feb", "Mar", "Apr", 
@@ -195,7 +197,8 @@ view(LWSP_Asheville2015)
 DurhamAshville2015 <- rbind(LWSP_Durham2015, LWSP_Asheville2015)
 
 # Use ggplot() to create a line graph that compares Durham and Asheville
-ggplot(DurhamAshville2015, aes(x = Month, y = MGD, color = WaterSystem, group = WaterSystem)) + 
+ggplot(DurhamAshville2015, aes(x = Month, y = MGD, 
+                               color = WaterSystem, group = WaterSystem)) + 
   geom_line() +
   labs(title = "MGD per month in 2015 for Asheville and Durham water systems", 
        x = "Month", 
@@ -210,7 +213,9 @@ ggplot(DurhamAshville2015, aes(x = Month, y = MGD, color = WaterSystem, group = 
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 Map the function to scrape data from 2018 to 2022 for Asheville
-Asheville2018to2022 <- seq(2018,2022) %>% map(~ scrape.it("01-11-010", .)) %>% bind_rows()
+Asheville2018to2022 <- seq(2018,2022) %>% 
+  map(~ scrape.it("01-11-010", .)) %>% 
+  bind_rows()
 
 # Use ggplot() to create a line graph that compares Durham and Asheville
 ggplot(Asheville2018to2022, aes(x = Date, y = MGD)) + 

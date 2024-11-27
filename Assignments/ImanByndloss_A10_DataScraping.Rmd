@@ -99,7 +99,7 @@ Month <- webpage %>%
 
 5. Create a line plot of the maximum daily withdrawals across the months for 2023, making sure, the months are presented in proper sequence.
 
-```{r create.a.dataframe.from.scraped".data}
+```{r create.a.dataframe.from.scraped.data}
 #4 Use data.frame() to create a new data frame with the relevant variables
 LWSP_Durham2023 <- data.frame("WaterSystem" = rep(WaterSystem, 12),
                               "PWSID" = rep(PWSID, 12), 
